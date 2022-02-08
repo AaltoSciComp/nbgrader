@@ -7,7 +7,7 @@ on:
   pull_request:
     branches: ["**"]
   push:
-    branches: [main, master]
+    branches: [main, master, "**"]
     tags: ["**"]
 
 defaults:
