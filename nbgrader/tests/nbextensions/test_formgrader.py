@@ -916,7 +916,7 @@ def test_add_new_assignment(browser, port, gradebook):
     elem.send_keys("ps2+a")
     elem = browser.find_element_by_css_selector("#add-assignment-modal .duedate")
     elem.click()
-    elem.send_keys("2017-07-05T17:00")
+    elem.send_keys("2017-07-05T17:00:00")
     elem = browser.find_element_by_css_selector("#add-assignment-modal .timezone")
     elem.click()
     elem.send_keys("UTC")
@@ -982,7 +982,7 @@ def test_edit_assignment(browser, port, gradebook):
     elem = browser.find_element_by_css_selector("#edit-assignment-modal .modal-duedate")
     elem.clear()
     elem.click()
-    elem.send_keys("2017-07-05T18:00")
+    elem.send_keys("2017-07-05T18:00:00")
 
     # click save and wait for the modal to close
     utils._click_element(browser, "#edit-assignment-modal .save")
