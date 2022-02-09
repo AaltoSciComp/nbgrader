@@ -144,7 +144,7 @@ def test_load_manage_assignments(browser, port, gradebook, fake_home_dir):
     utils._switch_to_window(browser, 0)
 
     # click on the preview link
-    browser.find_element_by_css_selector("td.preview .glyphicon").click()
+    browser.find_element(By.CSS_SELECTOR, "td.preview .glyphicon").click()
     utils._switch_to_window(browser, 1)
     utils._wait_for_tree_page(
         browser, port,
@@ -153,7 +153,7 @@ def test_load_manage_assignments(browser, port, gradebook, fake_home_dir):
     utils._switch_to_window(browser, 0)
 
     # click on the number of submissions
-    browser.find_element_by_css_selector("td.num-submissions a").click()
+    browser.find_element(By.CSS_SELECTOR, "td.num-submissions a").click()
     utils._wait_for_gradebook_page(browser, port, "manage_submissions/Problem Set 1")
 
 
@@ -191,7 +191,7 @@ def test_load_gradebook1(browser, port, gradebook):
     utils._wait_for_gradebook_page(browser, port, "gradebook/Problem Set 1")
 
     # test that the task column is present
-    elements = browser.find_elements_by_xpath('//th[text()="Avg. Task Score"]')
+    elements = browser.find_elements(By.XPATH, '//th[text()="Avg. Task Score"]')
     assert len(elements) == 1
 
 
@@ -209,7 +209,7 @@ def test_load_gradebook2(browser, port, gradebook):
     for problem in gradebook.find_assignment("Problem Set 1").notebooks:
         utils._click_link(browser, problem.name)
         utils._wait_for_gradebook_page(browser, port, "gradebook/Problem Set 1/{}".format(problem.name))
-        elements = browser.find_elements_by_xpath('//th[text()="Task Score"]')
+        elements = browser.find_elements(By.XPATH, '//th[text()="Task Score"]')
         assert len(elements) == 1
         browser.back()
 
@@ -238,7 +238,7 @@ def test_load_gradebook3(browser, port, gradebook):
             utils._wait_for_formgrader(browser, port, "submissions/{}/?index=0".format(submission.id))
             # only the first problem has a task cell
             if problem.name == "Problem 1":
-                elements = browser.find_elements_by_xpath('//span[text()="Student\'s task"]')
+                elements = browser.find_elements(By.XPATH, '//span[text()="Student\'s task"]')
                 assert len(elements) == 1
             browser.back()
 
@@ -251,10 +251,10 @@ def test_gradebook3_show_hide_names(browser, port, gradebook):
     submissions.sort(key=lambda x: x.id)
     submission = submissions[0]
 
-    top_elem = browser.find_elements_by_css_selector("tbody tr")[0]
-    col1, col2 = top_elem.find_elements_by_css_selector("td")[:2]
-    hidden = col1.find_element_by_css_selector(".glyphicon.name-hidden")
-    shown = col1.find_element_by_css_selector(".glyphicon.name-shown")
+    top_elem = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    col1, col2 = top_elem.find_elements(By.CSS_SELECTOR, "td")[:2]
+    hidden = col1.find_element(By.CSS_SELECTOR, ".glyphicon.name-hidden")
+    shown = col1.find_element(By.CSS_SELECTOR, ".glyphicon.name-shown")
 
     # check that the name is hidden
     assert col2.text == "Submission #1"
@@ -288,7 +288,7 @@ def test_load_student1(browser, port, gradebook):
     for student in gradebook.students:
         utils._click_link(browser, "{}, {}".format(student.last_name, student.first_name))
         utils._wait_for_gradebook_page(browser, port, "manage_students/{}".format(student.id))
-        elements = browser.find_elements_by_xpath('//th[text()="Task Score"]')
+        elements = browser.find_elements(By.XPATH, '//th[text()="Task Score"]')
         assert len(elements) == 1
         browser.back()
 
@@ -305,7 +305,7 @@ def test_load_student2(browser, port, gradebook):
 
         utils._click_link(browser, "Problem Set 1")
         utils._wait_for_gradebook_page(browser, port, "manage_students/{}/Problem Set 1".format(student.id))
-    elements = browser.find_elements_by_xpath('//th[text()="Task Score"]')
+    elements = browser.find_elements(By.XPATH, '//th[text()="Task Score"]')
     assert len(elements) == 1
 
 
@@ -413,7 +413,7 @@ def test_formgrade_images(browser, port, gradebook):
         utils._get(browser, utils._formgrade_url(port, "submissions/{}".format(submission.id)))
         utils._wait_for_formgrader(browser, port, "submissions/{}/?index=0".format(submission.id))
 
-        images = browser.find_elements_by_tag_name("img")
+        images = browser.find_elements(By.TAG_NAME, "img")
         for image in images:
             # check that the image is loaded, and that it has a width
             assert browser.execute_script("return arguments[0].complete", image)
@@ -862,9 +862,9 @@ def test_formgrade_show_hide_names(browser, port, gradebook):
     submissions.sort(key=lambda x: x.id)
     submission = submissions[0]
 
-    name = browser.find_elements_by_css_selector(".breadcrumb li")[-1]
-    hidden = browser.find_element_by_css_selector(".glyphicon.name-hidden")
-    shown = browser.find_element_by_css_selector(".glyphicon.name-shown")
+    name = browser.find_elements(By.CSS_SELECTOR, ".breadcrumb li")[-1]
+    hidden = browser.find_element(By.CSS_SELECTOR, ".glyphicon.name-hidden")
+    shown = browser.find_element(By.CSS_SELECTOR, ".glyphicon.name-shown")
 
     # check that the name is hidden
     assert name.text == "Submission #1"
@@ -874,7 +874,7 @@ def test_formgrade_show_hide_names(browser, port, gradebook):
     # click the show icon
     hidden.click()
     # move the mouse to the first breadcrumb so it's not hovering over the tooltip
-    ActionChains(browser).move_to_element(browser.find_elements_by_css_selector(".breadcrumb li")[0]).perform()
+    ActionChains(browser).move_to_element(browser.find_elements(By.CSS_SELECTOR, ".breadcrumb li")[0]).perform()
     WebDriverWait(browser, 10).until_not(EC.presence_of_element_located((By.CSS_SELECTOR, ".tooltip")))
 
     # check that the name is shown
@@ -885,7 +885,7 @@ def test_formgrade_show_hide_names(browser, port, gradebook):
     # click the hide icon
     shown.click()
     # move the mouse to the first breadcrumb so it's not hovering over the tooltip
-    ActionChains(browser).move_to_element(browser.find_elements_by_css_selector(".breadcrumb li")[0]).perform()
+    ActionChains(browser).move_to_element(browser.find_elements(By.CSS_SELECTOR, ".breadcrumb li")[0]).perform()
     WebDriverWait(browser, 10).until_not(EC.presence_of_element_located((By.CSS_SELECTOR, ".tooltip")))
 
     # check that the name is hidden
@@ -897,13 +897,13 @@ def test_formgrade_show_hide_names(browser, port, gradebook):
 @pytest.mark.nbextensions
 def test_before_add_new_assignment(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "")
-    assert len(browser.find_elements_by_css_selector("tbody tr")) == 1
+    assert len(browser.find_elements(By.CSS_SELECTOR, "tbody tr")) == 1
 
 
 @pytest.mark.nbextensions
 def test_add_new_assignment(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "")
-    n = len(browser.find_elements_by_css_selector("tbody tr"))
+    n = len(browser.find_elements(By.CSS_SELECTOR, "tbody tr"))
 
     # click the "add new assignment" button
     utils._click_link(browser, "Add new assignment...")
@@ -911,22 +911,21 @@ def test_add_new_assignment(browser, port, gradebook):
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#add-assignment-modal .save")))
 
     # set the name and dudedate
-    elem = browser.find_element_by_css_selector("#add-assignment-modal .name")
-    elem.click()
+    elem = browser.find_element(By.CSS_SELECTOR, "#add-assignment-modal .name")
     elem.send_keys("ps2+a")
-    elem = browser.find_element_by_css_selector("#add-assignment-modal .duedate")
-    elem.click()
-    elem.send_keys("2017-07-05T17:00")
-    elem = browser.find_element_by_css_selector("#add-assignment-modal .timezone")
-    elem.click()
-    elem.send_keys("UTC")
+    elem = browser.find_element(By.CSS_SELECTOR, "#add-assignment-modal .duedate")
+    elem.send_keys("07052017")
+    elem.send_keys(Keys.TAB)
+    elem.send_keys("0500PM")
+    elem = browser.find_element(By.CSS_SELECTOR, "#add-assignment-modal .timezone")
+    elem.send_keys("+0000")
 
     # click save and wait for the error message to appear
     utils._click_element(browser, "#add-assignment-modal .save")
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#create-error")))
 
     # set a valid name
-    elem = browser.find_element_by_css_selector("#add-assignment-modal .name")
+    elem = browser.find_element(By.CSS_SELECTOR, "#add-assignment-modal .name")
     elem.clear()
     elem.click()
     # check with a name containing whitespace, as this should be stripped
@@ -939,33 +938,33 @@ def test_add_new_assignment(browser, port, gradebook):
     WebDriverWait(browser, 10).until(modal_not_present)
 
     # wait until both rows are present
-    rows_present = lambda browser: len(browser.find_elements_by_css_selector("tbody tr")) == (n + 1)
+    rows_present = lambda browser: len(browser.find_elements(By.CSS_SELECTOR, "tbody tr")) == (n + 1)
     WebDriverWait(browser, 10).until(rows_present)
 
     # check that the new row is correct
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 17:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "draft"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 17:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "draft"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert not utils._child_exists(row, ".preview a")
     assert not utils._child_exists(row, ".release a")
     assert not utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "0"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "0"
 
     # reload the page and make sure everything is still correct
     utils._load_gradebook_page(browser, port, "")
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 17:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "draft"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 17:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "draft"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert not utils._child_exists(row, ".preview a")
     assert not utils._child_exists(row, ".release a")
     assert not utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "0"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "0"
 
 
 @pytest.mark.nbextensions
@@ -973,16 +972,17 @@ def test_edit_assignment(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "")
 
     # click on the edit button
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    row.find_element_by_css_selector(".edit a").click()
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    row.find_element(By.CSS_SELECTOR, ".edit a").click()
     utils._wait_for_element(browser, "edit-assignment-modal")
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#edit-assignment-modal .save")))
 
     # modify the duedate
-    elem = browser.find_element_by_css_selector("#edit-assignment-modal .modal-duedate")
+    elem = browser.find_element(By.CSS_SELECTOR, "#edit-assignment-modal .modal-duedate")
     elem.clear()
-    elem.click()
-    elem.send_keys("2017-07-05T18:00")
+    elem.send_keys("07052017")
+    elem.send_keys(Keys.TAB)
+    elem.send_keys("0600PM")
 
     # click save and wait for the modal to close
     utils._click_element(browser, "#edit-assignment-modal .save")
@@ -990,29 +990,29 @@ def test_edit_assignment(browser, port, gradebook):
     WebDriverWait(browser, 10).until(modal_not_present)
 
     # check that the modified row is correct
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "draft"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "draft"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert not utils._child_exists(row, ".preview a")
     assert not utils._child_exists(row, ".release a")
     assert not utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "0"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "0"
 
     # reload the page and make sure everything is still correct
     utils._load_gradebook_page(browser, port, "")
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "draft"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "draft"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert not utils._child_exists(row, ".preview a")
     assert not utils._child_exists(row, ".release a")
     assert not utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "0"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "0"
 
 
 @pytest.mark.nbextensions
@@ -1021,8 +1021,8 @@ def test_generate_assignment_fail(browser, port, gradebook):
 
     # click on the generate button -- should produce an error because there
     # are no notebooks for ps2 yet
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    row.find_element_by_css_selector(".assign a").click()
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    row.find_element(By.CSS_SELECTOR, ".assign a").click()
     utils._wait_for_element(browser, "error-modal")
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#error-modal .close")))
     utils._click_element(browser, "#error-modal .close")
@@ -1039,8 +1039,8 @@ def test_generate_assignment_success(browser, port, gradebook):
     shutil.copy(source_path, join("source", "ps2", "Problem 1.ipynb"))
 
     # click on the generate button -- should now succeed
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    row.find_element_by_css_selector(".assign a").click()
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    row.find_element(By.CSS_SELECTOR, ".assign a").click()
     utils._wait_for_element(browser, "success-modal")
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#success-modal .close")))
     utils._click_element(browser, "#success-modal .close")
@@ -1048,10 +1048,10 @@ def test_generate_assignment_success(browser, port, gradebook):
     WebDriverWait(browser, 10).until(modal_not_present)
 
     # check that the modified row is correct
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "draft"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "draft"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert utils._child_exists(row, ".preview a")
@@ -1060,14 +1060,14 @@ def test_generate_assignment_success(browser, port, gradebook):
     else:
         assert utils._child_exists(row, ".release a")
     assert not utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "0"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "0"
 
     # reload the page and make sure everything is still correct
     utils._load_gradebook_page(browser, port, "")
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "draft"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "draft"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert utils._child_exists(row, ".preview a")
@@ -1076,7 +1076,7 @@ def test_generate_assignment_success(browser, port, gradebook):
     else:
         assert utils._child_exists(row, ".release a")
     assert not utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "0"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "0"
 
 
 @notwindows
@@ -1085,8 +1085,8 @@ def test_release_assignment(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "")
 
     # click on the release button
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    row.find_element_by_css_selector(".release a").click()
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    row.find_element(By.CSS_SELECTOR, ".release a").click()
     utils._wait_for_element(browser, "success-modal")
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#success-modal .close")))
     utils._click_element(browser, "#success-modal .close")
@@ -1094,29 +1094,29 @@ def test_release_assignment(browser, port, gradebook):
     WebDriverWait(browser, 10).until(modal_not_present)
 
     # check that the modified row is correct
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "released"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "released"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert utils._child_exists(row, ".preview a")
     assert utils._child_exists(row, ".release a")
     assert utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "0"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "0"
 
     # reload the page and make sure everything is still correct
     utils._load_gradebook_page(browser, port, "")
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "released"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "released"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert utils._child_exists(row, ".preview a")
     assert utils._child_exists(row, ".release a")
     assert utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "0"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "0"
 
 
 @notwindows
@@ -1129,8 +1129,8 @@ def test_collect_assignment(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "")
 
     # click on the collect button
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    row.find_element_by_css_selector(".collect a").click()
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    row.find_element(By.CSS_SELECTOR, ".collect a").click()
     utils._wait_for_element(browser, "success-modal")
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#success-modal .close")))
     utils._click_element(browser, "#success-modal .close")
@@ -1138,29 +1138,29 @@ def test_collect_assignment(browser, port, gradebook):
     WebDriverWait(browser, 10).until(modal_not_present)
 
     # check that the modified row is correct
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "released"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "released"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert utils._child_exists(row, ".preview a")
     assert utils._child_exists(row, ".release a")
     assert utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "1"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "1"
 
     # reload the page and make sure everything is still correct
     utils._load_gradebook_page(browser, port, "")
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "released"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "released"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert utils._child_exists(row, ".preview a")
     assert utils._child_exists(row, ".release a")
     assert utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "1"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "1"
 
 
 @notwindows
@@ -1169,8 +1169,8 @@ def test_unrelease_assignment(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "")
 
     # click on the unrelease button
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    row.find_element_by_css_selector(".release a").click()
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    row.find_element(By.CSS_SELECTOR, ".release a").click()
     utils._wait_for_element(browser, "success-modal")
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#success-modal .close")))
     utils._click_element(browser, "#success-modal .close")
@@ -1178,29 +1178,29 @@ def test_unrelease_assignment(browser, port, gradebook):
     WebDriverWait(browser, 10).until(modal_not_present)
 
     # check that the modified row is correct
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "draft"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "draft"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert utils._child_exists(row, ".preview a")
     assert utils._child_exists(row, ".release a")
     assert not utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "1"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "1"
 
     # reload the page and make sure everything is still correct
     utils._load_gradebook_page(browser, port, "")
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "draft"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "draft"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert utils._child_exists(row, ".preview a")
     assert utils._child_exists(row, ".release a")
     assert not utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "1"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "1"
 
 
 @pytest.mark.nbextensions
@@ -1218,10 +1218,10 @@ def test_manually_collect_assignment(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "")
 
     # check that the row is correct
-    row = browser.find_elements_by_css_selector("tbody tr")[1]
-    assert row.find_element_by_css_selector(".name").text == "ps2"
-    assert row.find_element_by_css_selector(".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "draft"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 18:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "draft"
     assert utils._child_exists(row, ".edit a")
     assert utils._child_exists(row, ".assign a")
     assert utils._child_exists(row, ".preview a")
@@ -1230,7 +1230,7 @@ def test_manually_collect_assignment(browser, port, gradebook):
     else:
         assert utils._child_exists(row, ".release a")
     assert not utils._child_exists(row, ".collect a")
-    assert row.find_element_by_css_selector(".num-submissions").text == "1"
+    assert row.find_element(By.CSS_SELECTOR, ".num-submissions").text == "1"
 
 
 @pytest.mark.nbextensions
@@ -1238,12 +1238,12 @@ def test_before_autograde_assignment(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "manage_submissions/ps2")
 
     # check the contents of the row before grading
-    row = browser.find_elements_by_css_selector("tbody tr")[0]
-    assert row.find_element_by_css_selector(".student-name").text == "B, Ben"
-    assert row.find_element_by_css_selector(".student-id").text == "Bitdiddle"
-    assert row.find_element_by_css_selector(".timestamp").text == "2017-07-05 18:05:21 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "needs autograding"
-    assert row.find_element_by_css_selector(".score").text == ""
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    assert row.find_element(By.CSS_SELECTOR, ".student-name").text == "B, Ben"
+    assert row.find_element(By.CSS_SELECTOR, ".student-id").text == "Bitdiddle"
+    assert row.find_element(By.CSS_SELECTOR, ".timestamp").text == "2017-07-05 18:05:21 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "needs autograding"
+    assert row.find_element(By.CSS_SELECTOR, ".score").text == ""
     assert utils._child_exists(row, ".autograde a")
 
 
@@ -1252,8 +1252,8 @@ def test_autograde_assignment1(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "manage_submissions/ps2")
 
     # click on the autograde button
-    row = browser.find_elements_by_css_selector("tbody tr")[0]
-    row.find_element_by_css_selector(".autograde a").click()
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    row.find_element(By.CSS_SELECTOR, ".autograde a").click()
     utils._wait_for_element(browser, "success-modal")
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#success-modal .close")))
     utils._click_element(browser, "#success-modal .close")
@@ -1261,24 +1261,24 @@ def test_autograde_assignment1(browser, port, gradebook):
     WebDriverWait(browser, 10).until(modal_not_present)
 
     # check that the modified row is correct
-    row = browser.find_elements_by_css_selector("tbody tr")[0]
-    assert row.find_element_by_css_selector(".student-name").text == "B, Ben"
-    assert row.find_element_by_css_selector(".student-id").text == "Bitdiddle"
-    assert row.find_element_by_css_selector(".timestamp").text == "2017-07-05 18:05:21 {}".format(tz)
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    assert row.find_element(By.CSS_SELECTOR, ".student-name").text == "B, Ben"
+    assert row.find_element(By.CSS_SELECTOR, ".student-id").text == "Bitdiddle"
+    assert row.find_element(By.CSS_SELECTOR, ".timestamp").text == "2017-07-05 18:05:21 {}".format(tz)
     # the task cell needs to be manually graded
-    assert row.find_element_by_css_selector(".status").text == "needs manual grading"
-    assert row.find_element_by_css_selector(".score").text == "0 / 10"
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "needs manual grading"
+    assert row.find_element(By.CSS_SELECTOR, ".score").text == "0 / 10"
     assert utils._child_exists(row, ".autograde a")
 
     # refresh and check again
     utils._load_gradebook_page(browser, port, "manage_submissions/ps2")
-    row = browser.find_elements_by_css_selector("tbody tr")[0]
-    assert row.find_element_by_css_selector(".student-name").text == "B, Ben"
-    assert row.find_element_by_css_selector(".student-id").text == "Bitdiddle"
-    assert row.find_element_by_css_selector(".timestamp").text == "2017-07-05 18:05:21 {}".format(tz)
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    assert row.find_element(By.CSS_SELECTOR, ".student-name").text == "B, Ben"
+    assert row.find_element(By.CSS_SELECTOR, ".student-id").text == "Bitdiddle"
+    assert row.find_element(By.CSS_SELECTOR, ".timestamp").text == "2017-07-05 18:05:21 {}".format(tz)
     # the task cell needs to be manually graded
-    assert row.find_element_by_css_selector(".status").text == "needs manual grading"
-    assert row.find_element_by_css_selector(".score").text == "0 / 10"
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "needs manual grading"
+    assert row.find_element(By.CSS_SELECTOR, ".score").text == "0 / 10"
     assert utils._child_exists(row, ".autograde a")
 
 
@@ -1291,8 +1291,8 @@ def test_autograde_assignment2(browser, port, gradebook):
     shutil.copy(source_path, join("submitted", "Bitdiddle", "ps2", "Problem 1.ipynb"))
 
     # click on the autograde button
-    row = browser.find_elements_by_css_selector("tbody tr")[0]
-    row.find_element_by_css_selector(".autograde a").click()
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    row.find_element(By.CSS_SELECTOR, ".autograde a").click()
     utils._wait_for_element(browser, "success-modal")
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#success-modal .close")))
     utils._click_element(browser, "#success-modal .close")
@@ -1300,35 +1300,35 @@ def test_autograde_assignment2(browser, port, gradebook):
     WebDriverWait(browser, 10).until(modal_not_present)
 
     # check that the modified row is correct
-    row = browser.find_elements_by_css_selector("tbody tr")[0]
-    assert row.find_element_by_css_selector(".student-name").text == "B, Ben"
-    assert row.find_element_by_css_selector(".student-id").text == "Bitdiddle"
-    assert row.find_element_by_css_selector(".timestamp").text == "2017-07-05 18:05:21 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "needs manual grading"
-    assert row.find_element_by_css_selector(".score").text == "3 / 10"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    assert row.find_element(By.CSS_SELECTOR, ".student-name").text == "B, Ben"
+    assert row.find_element(By.CSS_SELECTOR, ".student-id").text == "Bitdiddle"
+    assert row.find_element(By.CSS_SELECTOR, ".timestamp").text == "2017-07-05 18:05:21 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "needs manual grading"
+    assert row.find_element(By.CSS_SELECTOR, ".score").text == "3 / 10"
     assert utils._child_exists(row, ".autograde a")
 
     # refresh and check again
     utils._load_gradebook_page(browser, port, "manage_submissions/ps2")
-    row = browser.find_elements_by_css_selector("tbody tr")[0]
-    assert row.find_element_by_css_selector(".student-name").text == "B, Ben"
-    assert row.find_element_by_css_selector(".student-id").text == "Bitdiddle"
-    assert row.find_element_by_css_selector(".timestamp").text == "2017-07-05 18:05:21 {}".format(tz)
-    assert row.find_element_by_css_selector(".status").text == "needs manual grading"
-    assert row.find_element_by_css_selector(".score").text == "3 / 10"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    assert row.find_element(By.CSS_SELECTOR, ".student-name").text == "B, Ben"
+    assert row.find_element(By.CSS_SELECTOR, ".student-id").text == "Bitdiddle"
+    assert row.find_element(By.CSS_SELECTOR, ".timestamp").text == "2017-07-05 18:05:21 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "needs manual grading"
+    assert row.find_element(By.CSS_SELECTOR, ".score").text == "3 / 10"
     assert utils._child_exists(row, ".autograde a")
 
 
 @pytest.mark.nbextensions
 def test_before_add_new_student(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "manage_students")
-    assert len(browser.find_elements_by_css_selector("tbody tr")) == 3
+    assert len(browser.find_elements(By.CSS_SELECTOR, "tbody tr")) == 3
 
 
 @pytest.mark.nbextensions
 def test_add_new_student(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "manage_students")
-    n = len(browser.find_elements_by_css_selector("tbody tr"))
+    n = len(browser.find_elements(By.CSS_SELECTOR, "tbody tr"))
 
     # click the "add new assignment" button
     utils._click_link(browser, "Add new student...")
@@ -1336,18 +1336,18 @@ def test_add_new_student(browser, port, gradebook):
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#add-student-modal .save")))
 
     # set the name and dudedate
-    elem = browser.find_element_by_css_selector("#add-student-modal .id")
+    elem = browser.find_element(By.CSS_SELECTOR, "#add-student-modal .id")
     elem.click()
     # check with a name containing whitespace, as this should be stripped
     # away and handled by the interface
     elem.send_keys("ator  ")
-    elem = browser.find_element_by_css_selector("#add-student-modal .first-name")
+    elem = browser.find_element(By.CSS_SELECTOR, "#add-student-modal .first-name")
     elem.click()
     elem.send_keys("Eva Lou")
-    elem = browser.find_element_by_css_selector("#add-student-modal .last-name")
+    elem = browser.find_element(By.CSS_SELECTOR, "#add-student-modal .last-name")
     elem.click()
     elem.send_keys("Ator")
-    elem = browser.find_element_by_css_selector("#add-student-modal .email")
+    elem = browser.find_element(By.CSS_SELECTOR, "#add-student-modal .email")
     elem.click()
     elem.send_keys("ela@email.com")
 
@@ -1357,24 +1357,24 @@ def test_add_new_student(browser, port, gradebook):
     WebDriverWait(browser, 10).until(modal_not_present)
 
     # wait until both rows are present
-    rows_present = lambda browser: len(browser.find_elements_by_css_selector("tbody tr")) == (n + 1)
+    rows_present = lambda browser: len(browser.find_elements(By.CSS_SELECTOR, "tbody tr")) == (n + 1)
     WebDriverWait(browser, 10).until(rows_present)
 
     # check that the new row is correct
-    row = browser.find_elements_by_css_selector("tbody tr")[0]
-    assert row.find_element_by_css_selector(".name").text == "Ator, Eva Lou"
-    assert row.find_element_by_css_selector(".id").text == "ator"
-    assert row.find_element_by_css_selector(".email").text == "ela@email.com"
-    assert row.find_element_by_css_selector(".score").text == "0 / 23"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "Ator, Eva Lou"
+    assert row.find_element(By.CSS_SELECTOR, ".id").text == "ator"
+    assert row.find_element(By.CSS_SELECTOR, ".email").text == "ela@email.com"
+    assert row.find_element(By.CSS_SELECTOR, ".score").text == "0 / 23"
     assert utils._child_exists(row, ".edit a")
 
     # reload the page and make sure everything is still correct
     utils._load_gradebook_page(browser, port, "manage_students")
-    row = browser.find_elements_by_css_selector("tbody tr")[0]
-    assert row.find_element_by_css_selector(".name").text == "Ator, Eva Lou"
-    assert row.find_element_by_css_selector(".id").text == "ator"
-    assert row.find_element_by_css_selector(".email").text == "ela@email.com"
-    assert row.find_element_by_css_selector(".score").text == "0 / 23"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "Ator, Eva Lou"
+    assert row.find_element(By.CSS_SELECTOR, ".id").text == "ator"
+    assert row.find_element(By.CSS_SELECTOR, ".email").text == "ela@email.com"
+    assert row.find_element(By.CSS_SELECTOR, ".score").text == "0 / 23"
     assert utils._child_exists(row, ".edit a")
 
 
@@ -1383,13 +1383,13 @@ def test_edit_student(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "manage_students")
 
     # click on the edit button
-    row = browser.find_elements_by_css_selector("tbody tr")[0]
-    row.find_element_by_css_selector(".edit a").click()
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    row.find_element(By.CSS_SELECTOR, ".edit a").click()
     utils._wait_for_element(browser, "edit-student-modal")
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#edit-student-modal .modal-email")))
 
     # modify the duedate
-    elem = browser.find_element_by_css_selector("#edit-student-modal .modal-email")
+    elem = browser.find_element(By.CSS_SELECTOR, "#edit-student-modal .modal-email")
     elem.clear()
     elem.click()
     elem.send_keys("ela@email.net")
@@ -1400,18 +1400,18 @@ def test_edit_student(browser, port, gradebook):
     WebDriverWait(browser, 10).until(modal_not_present)
 
     # check that the modified row is correct
-    row = browser.find_elements_by_css_selector("tbody tr")[0]
-    assert row.find_element_by_css_selector(".name").text == "Ator, Eva Lou"
-    assert row.find_element_by_css_selector(".id").text == "ator"
-    assert row.find_element_by_css_selector(".email").text == "ela@email.net"
-    assert row.find_element_by_css_selector(".score").text == "0 / 23"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "Ator, Eva Lou"
+    assert row.find_element(By.CSS_SELECTOR, ".id").text == "ator"
+    assert row.find_element(By.CSS_SELECTOR, ".email").text == "ela@email.net"
+    assert row.find_element(By.CSS_SELECTOR, ".score").text == "0 / 23"
     assert utils._child_exists(row, ".edit a")
 
     # reload the page and make sure everything is still correct
     utils._load_gradebook_page(browser, port, "manage_students")
-    row = browser.find_elements_by_css_selector("tbody tr")[0]
-    assert row.find_element_by_css_selector(".name").text == "Ator, Eva Lou"
-    assert row.find_element_by_css_selector(".id").text == "ator"
-    assert row.find_element_by_css_selector(".email").text == "ela@email.net"
-    assert row.find_element_by_css_selector(".score").text == "0 / 23"
+    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[0]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "Ator, Eva Lou"
+    assert row.find_element(By.CSS_SELECTOR, ".id").text == "ator"
+    assert row.find_element(By.CSS_SELECTOR, ".email").text == "ela@email.net"
+    assert row.find_element(By.CSS_SELECTOR, ".score").text == "0 / 23"
     assert utils._child_exists(row, ".edit a")

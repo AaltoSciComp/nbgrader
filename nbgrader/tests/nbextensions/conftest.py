@@ -13,6 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.firefox.service import Service
 from selenium.common.exceptions import NoAlertPresentException
 from textwrap import dedent
 
@@ -185,8 +186,9 @@ def _make_browser(tempdir):
 
     options = webdriver.firefox.options.Options()
     options.add_argument('-headless')
+    service = Service(log_path=os.path.devnull)
     browser = webdriver.Firefox(
-        options=options, service_log_path=os.path.devnull)
+        options=options, service=service)
     browser.set_page_load_timeout(30)
     browser.set_script_timeout(30)
 
