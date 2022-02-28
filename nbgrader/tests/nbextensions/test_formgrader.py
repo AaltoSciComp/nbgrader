@@ -8,6 +8,7 @@ import itertools
 import tempfile
 
 from os.path import join
+from pathlib import Path
 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -1035,8 +1036,11 @@ def test_generate_assignment_success(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "")
 
     # add a notebook for ps2
-    source_path = join(os.path.dirname(__file__), "..", "..", "docs", "source", "user_guide", "source", "ps1", "problem1.ipynb")
-    shutil.copy(source_path, join("source", "ps2", "Problem 1.ipynb"))
+    source_path = Path(join(os.path.dirname(__file__), "..", "..", "docs", "source", "user_guide", "source")).resolve() # source directory path
+    src = join(source_path, "ps1", "problem1.ipynb") # notebook ps1 filepath 
+    dst = join(source_path, "ps2", "Problem 1.ipynb") # notebook ps2 filepath
+    os.makedirs(join(source_path,"ps2"), exist_ok=True) # make ps2 directory
+    shutil.copy(src, dst) # copy file
 
     # click on the generate button -- should now succeed
     row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]

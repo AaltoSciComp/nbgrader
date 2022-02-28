@@ -698,8 +698,8 @@ class TestNbGraderAutograde(BaseTestApp):
 
         assert os.path.exists(join(course_dir, "autograded", "foo", "ps1", "p1.ipynb"))
         assert os.path.exists(join(course_dir, "autograded", "foo", "ps1", "p2.ipynb"))
-        p1 = self._file_contents(join(course_dir, "autograded", "foo", "ps1", "p1.ipynb"))
-        p2 = self._file_contents(join(course_dir, "autograded", "foo", "ps1", "p2.ipynb"))
+        p1 = self._notebook_contents(join(course_dir, "autograded", "foo", "ps1", "p1.ipynb"))
+        p2 = self._notebook_contents(join(course_dir, "autograded", "foo", "ps1", "p2.ipynb"))
         assert p1 == p2
 
         self._empty_notebook(join(course_dir, "submitted", "foo", "ps1", "p1.ipynb"))
@@ -708,8 +708,8 @@ class TestNbGraderAutograde(BaseTestApp):
 
         assert os.path.exists(join(course_dir, "autograded", "foo", "ps1", "p1.ipynb"))
         assert os.path.exists(join(course_dir, "autograded", "foo", "ps1", "p2.ipynb"))
-        assert p1 != self._file_contents(join(course_dir, "autograded", "foo", "ps1", "p1.ipynb"))
-        assert p2 == self._file_contents(join(course_dir, "autograded", "foo", "ps1", "p2.ipynb"))
+        assert p1 != self._notebook_contents(join(course_dir, "autograded", "foo", "ps1", "p1.ipynb"))
+        assert p2 == self._notebook_contents(join(course_dir, "autograded", "foo", "ps1", "p2.ipynb"))
 
     def test_update_newer(self, course_dir):
         run_nbgrader(["db", "assignment", "add", "ps1", "--duedate",
@@ -757,8 +757,8 @@ class TestNbGraderAutograde(BaseTestApp):
         assert os.path.exists(join(course_dir, "autograded", "foo", "ps1", "p2.ipynb"))
         assert os.path.isfile(join(course_dir, "autograded", "foo", "ps1", "timestamp.txt"))
         assert self._file_contents(join(course_dir, "autograded", "foo", "ps1", "timestamp.txt")) == "2015-02-02 15:58:23.948203 America/Los_Angeles"
-        p1 = self._file_contents(join(course_dir, "autograded", "foo", "ps1", "p1.ipynb"))
-        p2 = self._file_contents(join(course_dir, "autograded", "foo", "ps1", "p2.ipynb"))
+        p1 = self._notebook_contents(join(course_dir, "autograded", "foo", "ps1", "p1.ipynb"))
+        p2 = self._notebook_contents(join(course_dir, "autograded", "foo", "ps1", "p2.ipynb"))
         assert p1 == p2
 
         self._empty_notebook(join(course_dir, "submitted", "foo", "ps1", "p1.ipynb"))
@@ -770,8 +770,8 @@ class TestNbGraderAutograde(BaseTestApp):
         assert os.path.exists(join(course_dir, "autograded", "foo", "ps1", "p2.ipynb"))
         assert os.path.isfile(join(course_dir, "autograded", "foo", "ps1", "timestamp.txt"))
         assert self._file_contents(join(course_dir, "autograded", "foo", "ps1", "timestamp.txt")) == "2015-02-02 16:58:23.948203 America/Los_Angeles"
-        assert p1 != self._file_contents(join(course_dir, "autograded", "foo", "ps1", "p1.ipynb"))
-        assert p2 == self._file_contents(join(course_dir, "autograded", "foo", "ps1", "p2.ipynb"))
+        assert p1 != self._notebook_contents(join(course_dir, "autograded", "foo", "ps1", "p1.ipynb"))
+        assert p2 == self._notebook_contents(join(course_dir, "autograded", "foo", "ps1", "p2.ipynb"))
 
     def test_hidden_tests_single_notebook(self, db, course_dir):
         run_nbgrader(["db", "assignment", "add", "ps1", "--db", db, "--duedate",

@@ -5,7 +5,7 @@ import os
 import shutil
 import pytest
 
-from nbformat import write as write_nb
+from nbformat import write as write_nb, read
 from nbformat.v4 import new_notebook
 
 from ...utils import remove
@@ -69,3 +69,15 @@ class BaseTestApp(object):
         with open(path, "r") as fh:
             contents = fh.read()
         return contents
+
+    def _notebook_contents(self, path):
+        # read notebook with nbformat, version 4
+        with io.open(path, encoding='utf-8') as fp:
+            nb = read(fp, as_version=4)
+    
+        # remove kernel message timestamps in metadata of code cells
+        for cell in nb.cells:
+            if cell.cell_type == "code":
+                cell.metadata = {}
+        
+        return str(nb)
