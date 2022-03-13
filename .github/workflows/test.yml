@@ -7,7 +7,7 @@ on:
   pull_request:
     branches: ["**"]
   push:
-    branches: [main, master]
+    branches: [main, master, dev-2022, nbformat4]
     tags: ["**"]
 
 defaults:
@@ -73,6 +73,8 @@ jobs:
           python tasks.py install --group="$GROUP"
           pip freeze
       - name: Run pytest
+        env:
+          TZ: Europe/Helsinki
         run: |
           python tasks.py tests --group="$GROUP"
       # - name: Submit codecov report
