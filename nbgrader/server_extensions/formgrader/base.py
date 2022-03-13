@@ -39,9 +39,6 @@ class BaseHandler(IPythonHandler):
             self.settings['nbgrader_gradebook'] = gb
         return gb
 
-    @property
-    def mathjax_url(self):
-        return self.settings['mathjax_url']
 
     @property
     def exporter(self):
