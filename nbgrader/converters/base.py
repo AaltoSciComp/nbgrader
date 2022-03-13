@@ -8,7 +8,7 @@ import importlib
 
 from rapidfuzz import fuzz
 from traitlets.config import LoggingConfigurable, Config
-from traitlets import Bool, List, Dict, Integer, Instance, Type, Any
+from traitlets import Bool, List, Dict, Integer, Instance, Type, Any, TraitError
 from traitlets import default, validate
 from textwrap import dedent
 from nbconvert.exporters import Exporter, NotebookExporter
