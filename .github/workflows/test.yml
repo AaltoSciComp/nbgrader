@@ -70,6 +70,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip wheel setuptools
+          python -m pip install -r dev-requirements.txt
           python tasks.py install --group="$GROUP"
           pip freeze
       - name: Run pytest
