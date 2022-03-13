@@ -34,7 +34,7 @@ def new_uuid() -> str:
 
 
 def get_alembic_version() -> str:
-    with _temp_alembic_ini('sqlite:////tmp/gradebook.db') as alembic_ini:
+    with _temp_alembic_ini('sqlite:///tmp/gradebook.db') as alembic_ini:
         output = sp.check_output(['alembic', '-c', alembic_ini, 'heads'])
         head = output.decode().split("\n")[0].split(" ")[0]
         return head
@@ -3098,7 +3098,7 @@ class Gradebook(object):
             ).join(SubmittedNotebook).join(Grade).join(TaskCell)\
             .filter(TaskCell.cell_type == "markdown")\
             .group_by(SubmittedAssignment.id)
-        )
+        ).subquery()
         total_scores = self.db.query(
             func.sum(all_scores.c.score).label("score"),
             func.sum(all_scores.c.max_score).label("max_score"),
@@ -3239,7 +3239,7 @@ class Gradebook(object):
             ).join(Grade).join(TaskCell)\
             .filter(TaskCell.cell_type == "markdown")\
             .group_by(SubmittedNotebook.id)
-        )
+        ).subquery()
         total_scores = self.db.query(
             func.sum(all_scores.c.score).label("score"),
             func.sum(all_scores.c.max_score).label("max_score"),

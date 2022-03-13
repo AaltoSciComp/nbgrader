@@ -59,7 +59,9 @@ def _run_tests(mark, skip, junitxml, paralell=False):
     cmd.append('-x')
     if paralell:
         cmd.extend(['--numprocesses', 'auto'])
-    cmd.extend(['--reruns', '4'])
+    # nbextensions requires sequencial order of executing, rerun would break the dependency
+    if mark != "nbextensions":
+        cmd.extend(['--reruns', '4'])
 #    cmd.extend(['--mypy'])
 
     marks = []
@@ -90,7 +92,7 @@ def tests(args):
 
     elif args.group == 'all':
         _run_tests(mark=None, skip=args.skip, junitxml=args.junitxml)
-
+    
     else:
         raise ValueError("Invalid test group: {}".format(args.group))
 

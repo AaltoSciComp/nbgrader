@@ -914,10 +914,8 @@ def test_add_new_assignment(browser, port, gradebook):
     # set the name and dudedate
     elem = browser.find_element(By.CSS_SELECTOR, "#add-assignment-modal .name")
     elem.send_keys("ps2+a")
-    elem = browser.find_element(By.CSS_SELECTOR, "#add-assignment-modal .duedate")
-    elem.send_keys("07052017")
-    elem.send_keys(Keys.TAB)
-    elem.send_keys("0500PM")
+    # set due date by executing js script due to webdriver's inconsistent behavior of interacting with datetime-local field among various system settings. 
+    browser.execute_script(r'document.querySelector("#add-assignment-modal .duedate").value = "2017-07-05T17:00";')
     elem = browser.find_element(By.CSS_SELECTOR, "#add-assignment-modal .timezone")
     elem.send_keys("+0000")
 
@@ -971,19 +969,22 @@ def test_add_new_assignment(browser, port, gradebook):
 @pytest.mark.nbextensions
 def test_edit_assignment(browser, port, gradebook):
     utils._load_gradebook_page(browser, port, "")
+    rows = browser.find_elements(By.CSS_SELECTOR, "tbody tr")
+    assert len(rows) == 2
+
+    # check ps2 metadata
+    row = rows[1]
+    assert row.find_element(By.CSS_SELECTOR, ".name").text == "ps2"
+    assert row.find_element(By.CSS_SELECTOR, ".duedate").text == "2017-07-05 17:00:00 {}".format(tz)
+    assert row.find_element(By.CSS_SELECTOR, ".status").text == "draft"
 
     # click on the edit button
-    row = browser.find_elements(By.CSS_SELECTOR, "tbody tr")[1]
     row.find_element(By.CSS_SELECTOR, ".edit a").click()
     utils._wait_for_element(browser, "edit-assignment-modal")
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "#edit-assignment-modal .save")))
 
     # modify the duedate
-    elem = browser.find_element(By.CSS_SELECTOR, "#edit-assignment-modal .modal-duedate")
-    elem.clear()
-    elem.send_keys("07052017")
-    elem.send_keys(Keys.TAB)
-    elem.send_keys("0600PM")
+    browser.execute_script(r'document.querySelector("#edit-assignment-modal .modal-duedate").value = "2017-07-05T18:00";')
 
     # click save and wait for the modal to close
     utils._click_element(browser, "#edit-assignment-modal .save")
@@ -1038,7 +1039,7 @@ def test_generate_assignment_success(browser, port, gradebook):
     # add a notebook for ps2
     source_path = Path(join(os.path.dirname(__file__), "..", "..", "docs", "source", "user_guide", "source")).resolve() # source directory path
     src = join(source_path, "ps1", "problem1.ipynb") # notebook ps1 filepath 
-    dst = join(source_path, "ps2", "Problem 1.ipynb") # notebook ps2 filepath
+    dst = join(source_path, "ps2", "problem1.ipynb") # notebook ps2 filepath
     os.makedirs(join(source_path,"ps2"), exist_ok=True) # make ps2 directory
     shutil.copy(src, dst) # copy file
 
