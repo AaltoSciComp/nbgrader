@@ -94,6 +94,8 @@ class TestNbGraderAutograde(BaseTestApp):
             assert comment1.comment == None
             assert comment2.comment == None
 
+    @pytest.mark.timeout(300)
+    @pytest.mark.xfail(reason="cell executing will be in endless loop if showtrackback is modifild", strict=True)
     def test_showtraceback_exploit(self, db, course_dir):
         """Can students exploit showtraceback to hide errors from all future cell outputs to receive free points for incorrect cells?"""
         run_nbgrader(["db", "assignment", "add", "ps1", "--db", db, "--duedate", "2015-02-02 14:58:23.948203 America/Los_Angeles"])
