@@ -7,7 +7,7 @@ on:
   pull_request:
     branches: ["**"]
   push:
-    branches: [main, master, dev-2022, nbformat4]
+    branches: [main, master]
     tags: ["**"]
 
 defaults:
