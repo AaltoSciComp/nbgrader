@@ -230,7 +230,7 @@ class TestNbGraderDb(BaseTestApp):
             assignment = gb.find_assignment("foo")
             assert assignment.duedate is None
 
-        run_nbgrader(["db", "assignment", "add", "foo", '--duedate="Sun Jan 8 2017 4:31:22 PM"', "--db", db])
+        run_nbgrader(["db", "assignment", "add", "foo", '--duedate=Sun Jan 8 2017 4:31:22 PM', "--db", db])
         with Gradebook(db) as gb:
             assignment = gb.find_assignment("foo")
             assert assignment.duedate == datetime.datetime(2017, 1, 8, 16, 31, 22)
@@ -302,7 +302,7 @@ class TestNbGraderDb(BaseTestApp):
                 gb.find_assignment("ps1")
 
     def test_assignment_list(self, db):
-        run_nbgrader(["db", "assignment", "add", "foo", '--duedate="Sun Jan 8 2017 4:31:22 PM"', "--db", db])
+        run_nbgrader(["db", "assignment", "add", "foo", '--duedate=Sun Jan 8 2017 4:31:22 PM', "--db", db])
         run_nbgrader(["db", "assignment", "add", "bar", "--db", db])
         out = run_nbgrader(["db", "assignment", "list", "--db", db], stdout=True)
         assert out == dedent(
@@ -403,7 +403,7 @@ class TestNbGraderDb(BaseTestApp):
         run_nbgrader(["db", "upgrade"])
 
         # check that nbgrader assign passes
-        run_nbgrader(["assign", "ps1"])
+        run_nbgrader(["generate_assignment", "ps1"])
 
     def test_upgrade_old_db(self, course_dir):
         # add assignment files

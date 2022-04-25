@@ -34,7 +34,7 @@ class TestNbGraderFeedback(BaseTestApp):
         run_nbgrader(["db", "student", "add", "foo", "--db", db])
 
         self._copy_file(join("files", "submitted-unchanged.ipynb"), join(course_dir, "source", "ps1", "p1.ipynb"))
-        run_nbgrader(["assign", "ps1", "--db", db])
+        run_nbgrader(["generate_assignment", "ps1", "--db", db])
 
         self._copy_file(join("files", "submitted-unchanged.ipynb"), join(course_dir, "submitted", "foo", "ps1", "p1.ipynb"))
         run_nbgrader(["autograde", "ps1", "--db", db])
@@ -49,7 +49,7 @@ class TestNbGraderFeedback(BaseTestApp):
         run_nbgrader(["db", "student", "add", "bar", "--db", db])
         run_nbgrader(["db", "student", "add", "baz", "--db", db])
         self._copy_file(join("files", "submitted-unchanged.ipynb"), join(course_dir, "source", "ps1", "p1.ipynb"))
-        run_nbgrader(["assign", "ps1", "--db", db])
+        run_nbgrader(["generate_assignment", "ps1", "--db", db])
 
         for student in ["foo", "bar", "baz"]:
             self._copy_file(join("files", "submitted-unchanged.ipynb"), join(course_dir, "submitted", student, "ps1", "p1.ipynb"))
@@ -333,7 +333,7 @@ class TestNbGraderFeedback(BaseTestApp):
         run_nbgrader(["db", "student", "add", "bar"])
         self._copy_file(join("files", "test.ipynb"), join(course_dir, "source", "ps1", "p1.ipynb"))
         self._copy_file(join("files", "test.ipynb"), join(course_dir, "source", "ps1", "p2.ipynb"))
-        run_nbgrader(["assign", "ps1"])
+        run_nbgrader(["generate_assignment", "ps1"])
 
         self._copy_file(join("files", "test.ipynb"), join(course_dir, "submitted", "foo", "ps1", "p1.ipynb"))
         self._copy_file(join("files", "test.ipynb"), join(course_dir, "submitted", "foo", "ps1", "p2.ipynb"))

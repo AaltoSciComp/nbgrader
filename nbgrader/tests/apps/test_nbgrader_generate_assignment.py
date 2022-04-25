@@ -346,5 +346,5 @@ class TestNbGraderGenerateAssignment(BaseTestApp):
             path = course_dir + trailing_slash
         with open("nbgrader_config.py", "a") as fh:
             fh.write("""c.CourseDirectory.root = "{}"\n""".format(path))
-        run_nbgrader(["assign", "ps1"])
+        run_nbgrader(["generate_assignment", "ps1"])
         assert os.path.isfile(join(course_dir, "release", "ps1", "foo.ipynb"))
