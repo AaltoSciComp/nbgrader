@@ -47,7 +47,7 @@ def cleandocs(args):
     run('python nbgrader/docs/source/clear_docs.py')
 
 
-def _run_tests(mark, skip, junitxml, paralell=False):
+def _run_tests(mark, skip, junitxml, parallel=False):
     cmd = []
     cmd.append('pytest')
     if not WINDOWS:
@@ -57,11 +57,9 @@ def _run_tests(mark, skip, junitxml, paralell=False):
         cmd.extend(['--junitxml', junitxml])
     cmd.append('-v')
     cmd.append('-x')
-    if paralell:
+    if parallel:
         cmd.extend(['--numprocesses', 'auto'])
-    # nbextensions requires sequencial order of executing, rerun would break the dependency
-    if mark != "nbextensions":
-        cmd.extend(['--reruns', '4'])
+    cmd.extend(['--reruns', '4'])
 #    cmd.extend(['--mypy'])
 
     marks = []
@@ -82,7 +80,7 @@ def _run_tests(mark, skip, junitxml, paralell=False):
 def tests(args):
     if args.group == 'python':
         _run_tests(
-            mark="not nbextensions", skip=args.skip, junitxml=args.junitxml, paralell=True)
+            mark="not nbextensions", skip=args.skip, junitxml=args.junitxml, parallel=True)
 
     elif args.group == 'nbextensions':
         _run_tests(mark="nbextensions", skip=args.skip, junitxml=args.junitxml)
@@ -92,7 +90,6 @@ def tests(args):
 
     elif args.group == 'all':
         _run_tests(mark=None, skip=args.skip, junitxml=args.junitxml)
-    
     else:
         raise ValueError("Invalid test group: {}".format(args.group))
 

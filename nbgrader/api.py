@@ -34,7 +34,7 @@ def new_uuid() -> str:
 
 
 def get_alembic_version() -> str:
-    with _temp_alembic_ini('sqlite:///tmp/gradebook.db') as alembic_ini:
+    with _temp_alembic_ini('sqlite:////tmp/gradebook.db') as alembic_ini:
         output = sp.check_output(['alembic', '-c', alembic_ini, 'heads'])
         head = output.decode().split("\n")[0].split(" ")[0]
         return head

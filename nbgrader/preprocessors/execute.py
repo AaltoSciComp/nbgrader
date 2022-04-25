@@ -69,6 +69,7 @@ class Execute(NbGraderPreprocessor, ExecutePreprocessor):
             cell = self.execute_cell(cell, cell_index, store_history)
 
             # temporal workaround
+            # issue: ipython kernel returns excution_count as True instead of 1
             if cell.cell_type == "code":
                 if cell.execution_count == True:
                     cell.execution_count = 1
