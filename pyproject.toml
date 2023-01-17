@@ -50,7 +50,7 @@ dependencies = [
     "sqlalchemy>=1.4,<2",
     "traitlets<5.7.0",
 ]
-version = "0.8.1"
+version = "0.8.1.dev800"
 
 [project.license]
 file = "LICENSE"
