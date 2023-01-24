@@ -23,7 +23,7 @@ import { requestAPI } from './validateassignment';
 
 import { showNbGraderDialog, validate } from '../common/validate';
 
-var nbgrader_version = "0.8.1.dev800"; // TODO: hardcoded value
+var nbgrader_version = "0.8.1.dev801"; // TODO: hardcoded value
 
 const PLUGIN_ID = "nbgrader/validate-assignment"
 
