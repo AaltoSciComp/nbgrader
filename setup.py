@@ -85,7 +85,7 @@ setup_args = dict(
         'console_scripts': ['nbgrader=nbgrader.apps.nbgraderapp:main']
     },
     install_requires=[
-        "sqlalchemy>=1.4,<2",
+        "sqlalchemy>=1.4,<3",
         "python-dateutil>=2.8",
         "notebook>=6.4,<7",
         "nbconvert>=6",
