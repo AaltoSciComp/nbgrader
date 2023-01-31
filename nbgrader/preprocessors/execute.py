@@ -17,7 +17,7 @@ class Execute(NbGraderPreprocessor, ExecutePreprocessor):
     interrupt_on_timeout = Bool(True)
     allow_errors = Bool(True)
     raise_on_iopub_timeout = Bool(True)
-    timeout = Integer(30)
+    timeout = Integer(30).tag(config=True)
 
     error_on_timeout = {
         "ename": "CellTimeoutError",
