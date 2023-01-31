@@ -1,5 +1,6 @@
 from .. import utils
 from . import NbGraderPreprocessor
+from ..nbgraderformat import SCHEMA_REQUIRED
 from nbconvert.exporters.exporter import ResourcesDict
 from nbformat.notebooknode import NotebookNode
 from typing import Tuple
@@ -33,7 +34,11 @@ class DeduplicateIds(NbGraderPreprocessor):
         grade_id = cell.metadata.nbgrader['grade_id']
         if grade_id in self.grade_ids:
             self.log.warning("Cell with id '%s' exists multiple times!", grade_id)
-            cell.metadata.nbgrader = {}
+            # Replace the cell metadata to make it "unimportant"
+            schema_version = cell.metadata.nbgrader["schema_version"]
+            cell.metadata.nbgrader = SCHEMA_REQUIRED[schema_version]
+            # Add information for `CheckDuplicateFlag` to capture
+            cell.metadata["nbgrader_local"] = {"duplicate": True}
         else:
             self.grade_ids.add(grade_id)
 
