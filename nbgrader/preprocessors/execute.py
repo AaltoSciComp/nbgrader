@@ -1,5 +1,5 @@
 from nbconvert.preprocessors import ExecutePreprocessor, CellExecutionError
-from traitlets import Bool, List, Integer
+from traitlets import Bool, List, Integer, Dict
 from textwrap import dedent
 
 from . import NbGraderPreprocessor
@@ -19,11 +19,27 @@ class Execute(NbGraderPreprocessor, ExecutePreprocessor):
     raise_on_iopub_timeout = Bool(True)
     timeout = Integer(30).tag(config=True)
 
-    error_on_timeout = {
-        "ename": "CellTimeoutError",
-        "evalue": "",
-        "traceback": ["ERROR: No reply from kernel"]
-    }
+    error_on_timeout = Dict(
+        default_value={
+            "ename": "CellTimeoutError",
+            "evalue": "",
+            # ANSI red color around error name
+            "traceback": ["\x1b[0;31mCellTimeoutError\x1b[0m: No reply from kernel before timeout"]
+        },
+        help=dedent(
+            """
+            If a cell execution was interrupted after a timeout, don't wait for
+            the execute_reply from the kernel (e.g. KeyboardInterrupt error).
+            Instead, return an execute_reply with the given error, which should
+            be of the following form::
+                {
+                    'ename': str,  # Exception name, as a string
+                    'evalue': str,  # Exception value, as a string
+                    'traceback': list(str),  # traceback frames, as strings
+                }
+            """
+        ),
+    ).tag(config=True)
 
     extra_arguments = List([], help=dedent(
         """
@@ -49,12 +65,11 @@ class Execute(NbGraderPreprocessor, ExecutePreprocessor):
         if reply['content']['status'] == 'error':
             error_recorded = False
             for output in cell.outputs:
-                if output.output_type == 'error':
+                # If reply ename matches to an output, then they are (probably) the same error
+                if output.output_type == 'error' and output.ename == reply["content"]["ename"]:
                     error_recorded = True
             if not error_recorded:
-                # Occurs when
-                # IPython.core.interactiveshell.InteractiveShell.showtraceback
-                # = lambda *args, **kwargs : None
+                # If enames don't match (i.e. when there is a timeout), then append reply error, so it will be printed
                 error_output = NotebookNode(output_type='error')
                 error_output.ename = reply['content']['ename']
                 error_output.evalue = reply['content']['evalue']
