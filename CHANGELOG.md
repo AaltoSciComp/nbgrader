@@ -1,5 +1,7 @@
 A summary of changes to nbgrader.
 
+## 0.8.1.dev804
+
 ## 0.7.x
 
 <!-- <START NEW CHANGELOG ENTRY> -->
