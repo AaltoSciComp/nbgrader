@@ -70,6 +70,20 @@ class Exchange(ABCExchange):
         """Actually do the file transfer."""
         raise NotImplementedError
 
+    def get_size(self, root):
+        """
+        Return total size of directory in bytes.
+        """
+        total_size = 0
+        for dirpath, dirnames, filenames in os.walk(root):
+            for f in filenames:
+                fp = os.path.join(dirpath, f)
+                # skip if it is symbolic link
+                if not os.path.islink(fp):
+                    total_size += os.path.getsize(fp)
+        return total_size
+
+
     def do_copy(self, src, dest, log=None):
         """
         Copy the src dir to the dest dir, omitting excluded
@@ -77,31 +91,41 @@ class Exchange(ABCExchange):
         specified by the options coursedir.ignore, coursedir.include
         and coursedir.max_file_size.
         """
-        shutil.copytree(src, dest,
-                        ignore=ignore_patterns(exclude=self.coursedir.ignore,
-                                               include=self.coursedir.include,
-                                               max_file_size=self.coursedir.max_file_size,
-                                               log=self.log))
-        # copytree copies access mode too - so we must add go+rw back to it if
-        # we are in groupshared.
-        if self.coursedir.groupshared:
-            for dirname, _, filenames in os.walk(dest):
-                # dirs become ug+rwx
-                st_mode = os.stat(dirname).st_mode
-                if st_mode & 0o2770 != 0o2770:
-                    try:
-                        os.chmod(dirname, (st_mode|0o2770) & 0o2777)
-                    except PermissionError:
-                        self.log.warning("Could not update permissions of %s to make it groupshared", dirname)
-
-                for filename in filenames:
-                    filename = os.path.join(dirname, filename)
-                    st_mode = os.stat(filename).st_mode
-                    if st_mode & 0o660 != 0o660:
+        dir_size = self.get_size(src)
+        max_dir_size = self.coursedir.max_dir_size
+        if dir_size > 1000 * max_dir_size:
+            self.log.error("Directory size is too big")
+            raise RuntimeError(f"Directory size is too big. Size is {dir_size}, maximum size is {1000 * max_dir_size}")
+        try:
+            shutil.copytree(src, dest,
+                            ignore=ignore_patterns(exclude=self.coursedir.ignore,
+                                                   include=self.coursedir.include,
+                                                   max_file_size=self.coursedir.max_file_size,
+                                                   log=self.log))
+        except OSError as err:
+            raise err
+        # Set permissions for copied files, even if some failed to copy
+        finally:
+            # copytree copies access mode too - so we must add go+rw back to it if
+            # we are in groupshared.
+            if self.coursedir.groupshared:
+                for dirname, _, filenames in os.walk(dest):
+                    # dirs become ug+rwx
+                    st_mode = os.stat(dirname).st_mode
+                    if st_mode & 0o2770 != 0o2770:
                         try:
-                            os.chmod(filename, (st_mode|0o660) & 0o777)
+                            os.chmod(dirname, (st_mode|0o2770) & 0o2777)
                         except PermissionError:
-                            self.log.warning("Could not update permissions of %s to make it groupshared", filename)
+                            self.log.warning("Could not update permissions of %s to make it groupshared", dirname)
+
+                    for filename in filenames:
+                        filename = os.path.join(dirname, filename)
+                        st_mode = os.stat(filename).st_mode
+                        if st_mode & 0o660 != 0o660:
+                            try:
+                                os.chmod(filename, (st_mode|0o660) & 0o777)
+                            except PermissionError:
+                                self.log.warning("Could not update permissions of %s to make it groupshared", filename)
 
     def start(self):
         if sys.platform == 'win32':

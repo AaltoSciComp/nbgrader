@@ -254,7 +254,7 @@ class Validator(LoggingConfigurable):
                 # it's a markdown cell, so we can't do anything
                 if score is None:
                     pass
-                elif score < max_score:
+                elif score < max_score or (max_score == 0 and utils.has_failed(cell)):
                     failed.append(cell)
             elif self.validate_all and cell.cell_type == 'code':
                 for output in cell.outputs:
@@ -286,11 +286,8 @@ class Validator(LoggingConfigurable):
         resources = {}
         with utils.setenv(NBGRADER_VALIDATING='1', NBGRADER_EXECUTION='validate'):
             for preprocessor in self.preprocessors:
-                # https://github.com/jupyter/nbgrader/pull/1075
-                # It seemes that without the self.config passed below,
-                # --ExecutePreprocessor.timeout doesn't work.  Better solution
-                # requested, unknown why this is needed.
-                pp = preprocessor(**self.config[preprocessor.__name__])
+                # Let configuration be handled by traitlets
+                pp = preprocessor(parent=self)
                 nb, resources = pp.preprocess(nb, resources)
         return nb
 
