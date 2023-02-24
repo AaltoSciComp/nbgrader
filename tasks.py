@@ -78,6 +78,10 @@ def _run_tests(mark, skip, junitxml, paralell=False):
 
 
 def _run_ts_test():
+    # Prevent announcement pop-up from interfering with labextension tests
+    # This should probably be in Playwright config, but not sure how to do it yet
+    run('jupyter labextension disable "@jupyterlab/apputils-extension:announcements"')
+
     cmd = ['npx', 'playwright', 'test', '--retries=3']
     run(" ".join(cmd))
 
