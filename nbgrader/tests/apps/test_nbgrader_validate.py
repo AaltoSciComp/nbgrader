@@ -133,3 +133,12 @@ class TestNbGraderValidate(BaseTestApp):
         output = run_nbgrader(["validate", "nb1.ipynb"], stdout=True)
         assert output.splitlines()[0] == "VALIDATION FAILED ON 1 CELL(S)! If you submit your assignment as it is, you WILL NOT"
 
+    def test_validate_timeout(self, db, course_dir):
+        """Does validate accept timeout configuration correctly?"""
+        self._copy_file(join("files", "timeout.ipynb"), "nb1.ipynb")
+        output = run_nbgrader(["validate", "nb1.ipynb"], stdout=True)
+        assert output.strip() == "Success! Your notebook passes all the tests."
+
+        output = run_nbgrader(["validate", "--Execute.timeout=1", "nb1.ipynb"], stdout=True)
+        assert output.splitlines()[-2].strip() == "CellTimeoutError: No reply from kernel before timeout"
+
