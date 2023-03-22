@@ -1096,7 +1096,8 @@ class TestNbGraderAutograde(BaseTestApp):
         self._copy_file(join("files", "timeout.ipynb"), join(course_dir, "submitted", "bar", "ps1", "p1.ipynb"))
 
         output = run_nbgrader(["autograde", "ps1", "--db", db, "--student", "foo"])
-        output = run_nbgrader(["autograde", "ps1", "--db", db, "--student", "bar", "--Execute.timeout=1"])
+        # timeout=2 secs, 1 was causing an asyncio error on Windows
+        output = run_nbgrader(["autograde", "ps1", "--db", db, "--student", "bar", "--Execute.timeout=2"])
 
         # Check timeout config changes function based on timeout config
         with Gradebook(db) as gb:

@@ -139,6 +139,7 @@ class TestNbGraderValidate(BaseTestApp):
         output = run_nbgrader(["validate", "nb1.ipynb"], stdout=True)
         assert output.strip() == "Success! Your notebook passes all the tests."
 
-        output = run_nbgrader(["validate", "--Execute.timeout=1", "nb1.ipynb"], stdout=True)
+        # timeout=1 leads to an asyncio error on Windows
+        output = run_nbgrader(["validate", "--Execute.timeout=2", "nb1.ipynb"], stdout=True)
         assert output.splitlines()[-2].strip() == "CellTimeoutError: No reply from kernel before timeout"
 
