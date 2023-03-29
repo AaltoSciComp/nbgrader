@@ -1,6 +1,14 @@
 A summary of changes to nbgrader.
 
-## 0.7.x
+## v0.8.2.dev500
+
+- Merge branches 'limit-submission-directory-size' and
+  'multi-instructor-feedback' into dev-2023-3
+- Merge branch 'duplicate-cells', remote-tracking branches 'timeout',
+  'origin/tabfix' and 'origin/copy-2' into dev-2023-3
+  - Using duplicate-cells instead of origin/duplicate-2 because the remote
+    branch changes the notebook schema version, which causes issues when
+    grading notebooks created in jupyter.cs
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
