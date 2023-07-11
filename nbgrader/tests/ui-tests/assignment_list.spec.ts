@@ -403,6 +403,53 @@ test("Fetch assignments", async ({ page, request, tmpPath }) => {
 });
 
 /*
+ * Test fetch failure
+ */
+test("Fetch failure", async ({ page, request, tmpPath }) => {
+  test.skip(isWindows, "This feature is not implemented for Windows");
+
+  if (request === undefined) throw new Error("Request is undefined.");
+
+  // create directories and config files, and open assignment_list tab
+  await createEnv(testDir, tmpPath, exchange_dir, cache_dir, isWindows);
+  await addCourses(request, page, tmpPath);
+  await openAssignmentList(page);
+
+  // release some assignments
+  await executeCommand("nbgrader generate_assignment 'Problem Set 1' --force");
+  await executeCommand(
+    "nbgrader release_assignment 'Problem Set 1' --course 'abc101' --force"
+  );
+  await executeCommand("nbgrader generate_assignment 'ps.01' --force");
+  await executeCommand(
+    "nbgrader release_assignment 'ps.01' --course 'xyz 200' --force"
+  );
+
+  // refresh assignment list
+  await page.locator("#refresh_assignments_list").click();
+
+  // select one course
+  await selectCourse(page, "abc101");
+
+  // remove write permissions
+  // check that there is only one released, and try fetch it
+  // then restore permissions again
+  await fs.chmod("nbgrader-assignment-list-test", 0o555, err => {});
+  var rows = await waitForList(page, "released", 1);
+  await rows.first().locator(".item_status button").click();
+  await new Promise(resolve => setTimeout(resolve, 1000)); // to make sure permissions are not restored too fast
+  await fs.chmod("nbgrader-assignment-list-test", 0o755, err => {});
+
+  // check that there is still only one released
+  rows = await waitForList(page, "released", 1);
+
+  // Check and close the error message
+  await waitForErrorModal(page);
+  await closeErrorModal(page);
+
+});
+
+/*
  * Test submit assignment
  */
 test("Submit assignments", async ({ page, request, tmpPath }) => {
