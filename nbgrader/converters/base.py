@@ -17,6 +17,7 @@ from nbconvert.writers import FilesWriter
 from ..coursedir import CourseDirectory
 from ..utils import find_all_files, rmtree, remove
 from ..preprocessors.execute import UnresponsiveKernelError
+from ..postprocessors import DuplicateCellError
 from ..nbgraderformat import SchemaTooOldError, SchemaTooNewError
 import typing
 from nbconvert.exporters.exporter import ResourcesDict
@@ -387,7 +388,18 @@ class BaseConverter(LoggingConfigurable):
 
                 # convert all the notebooks
                 for notebook_filename in self.notebooks:
-                    self.convert_single_notebook(notebook_filename)
+                    # The outer try-except is on an assignment level.
+                    # If desired behavior for duplicate cells is to skip duplicates and autograde
+                    # we need to catch errors on a notebook level
+                    # So either do this (try-except again), or take the for loop out.
+                    try:
+                        self.convert_single_notebook(notebook_filename)
+                    except DuplicateCellError:
+                        msg = (
+                            "Encountered a cell with duplicate id."
+                        )
+                        self.log.error(msg)
+                        errors.append((gd['assignment_id'], gd['student_id']))
 
                 # set assignment permissions
                 self.set_permissions(gd['assignment_id'], gd['student_id'])
