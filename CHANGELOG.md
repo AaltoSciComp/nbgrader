@@ -4,6 +4,8 @@ A summary of changes to nbgrader.
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.8.4.dev502
+
 ## 0.8.4
 
 ([Full Changelog](https://github.com/jupyter/nbgrader/compare/v0.8.3...83a0429e32e5d146a638dfeef6cee9fad7f277ab))
