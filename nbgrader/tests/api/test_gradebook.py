@@ -796,6 +796,21 @@ def test_find_grade(assignment):
         assignment.find_grade('asdf', 'p1', 'foo', 'hacker123')
 
 
+def test_find_all_grades(FiveStudents):
+    assignments = FiveStudents
+    grades = assignments.find_all_grades("a1")
+    s1_grades = assignments.find_all_grades("a1", "s1")
+
+    assert len(grades) == 20
+    assert len(s1_grades) == 4
+    assert list(map(lambda g: g.score, s1_grades)) == [1, 2, 10, 20]
+
+
+def test_find_assignment_gradecells(FiveStudents):
+    cells = FiveStudents.find_assignment_gradecells("a1")
+    assert list(map(lambda c: c.name, cells)) == ['grade_code1', 'grade_code2', 'grade_written1', 'grade_written2']
+
+
 def test_find_grade_by_id(assignment):
     assignment.add_student('hacker123')
     s = assignment.add_submission('foo', 'hacker123')

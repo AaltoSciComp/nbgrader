@@ -2616,6 +2616,79 @@ class Gradebook(object):
 
         return grade
 
+    def find_all_grades(self, assignment: str, student: str = None) -> List[Grade]:
+        """Find all detailed grades for a given assignment. If a student is specified,
+        only that student's grades are returned.
+
+        Parameters
+        ----------
+        assignment : string
+            the name of an assignment
+        student : string (default=None)
+            the unique id of a student
+
+        Returns
+        -------
+        grades : list
+            A list of :class:`~nbgrader.api.Grade` objects
+        """
+        try:
+            grades_query = self.db.query(Grade)\
+                .join(GradeCell, GradeCell.id == Grade.cell_id)\
+                .join(SubmittedNotebook, SubmittedNotebook.id == Grade.notebook_id)\
+                .join(Notebook, Notebook.id == SubmittedNotebook.notebook_id)\
+                .join(SubmittedAssignment, SubmittedAssignment.id == SubmittedNotebook.assignment_id)\
+                .join(Assignment, Assignment.id == SubmittedAssignment.assignment_id)\
+                .filter(Assignment.name == assignment)\
+                .join(Student, Student.id == SubmittedAssignment.student_id)
+            if student:
+                grades_query = grades_query.filter(Student.id == student)
+            grades = grades_query.all()
+        except NoResultFound:
+            try:
+                grades_query = self.db.query(Grade)\
+                    .join(TaskCell, TaskCell.id == Grade.cell_id)\
+                    .join(SubmittedNotebook, SubmittedNotebook.id == Grade.notebook_id)\
+                    .join(Notebook, Notebook.id == SubmittedNotebook.notebook_id)\
+                    .join(SubmittedAssignment, SubmittedAssignment.id == SubmittedNotebook.assignment_id)\
+                    .join(Assignment, Assignment.id == SubmittedAssignment.assignment_id)\
+                    .filter(Assignment.name == assignment)\
+                    .join(Student, Student.id == SubmittedAssignment.student_id)
+                if student:
+                    grades_query = grades_query.filter(Student.id == student)
+                grades = grades_query.all()
+            except NoResultFound:
+                raise MissingEntry("No such grade: {} for {}".format(
+                    assignment, student if student else "any student"))
+
+        return grades
+
+    def find_assignment_gradecells(self, assignment: str) -> List[GradeCell]:
+        """Find all grade cells in a given assignment.
+
+        Parameters
+        ----------
+        assignment : string
+            the name of an assignment
+
+        Returns
+        -------
+        grade_cells : list
+            A list of :class:`~nbgrader.api.GradeCell` objects
+
+        """
+
+        try:
+            grade_cells = self.db.query(GradeCell)\
+                .join(Notebook, Notebook.id == GradeCell.notebook_id)\
+                .join(Assignment, Assignment.id == Notebook.assignment_id)\
+                .filter(Assignment.name == assignment)\
+                .all()
+        except NoResultFound:
+            raise MissingEntry("No grade cells found: {}".format(assignment))
+
+        return grade_cells
+
     def find_grade_by_id(self, grade_id):
         """Find a grade by its unique id.
 
