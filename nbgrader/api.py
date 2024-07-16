@@ -1320,7 +1320,7 @@ class Gradebook(object):
 
         """
         # create the connection to the database
-        self.engine = create_engine(db_url, echo=False, future=True)
+        self.engine = create_engine(db_url, echo=True, future=True)
         self.db = scoped_session(sessionmaker(autoflush=True, bind=self.engine, future=True))
 
         # this creates all the tables in the database if they don't already exist
