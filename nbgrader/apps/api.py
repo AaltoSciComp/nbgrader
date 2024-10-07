@@ -1164,7 +1164,7 @@ class NbGraderAPI(LoggingConfigurable):
             assignments = lister_rel.start()
             ret_dic["value"] = sorted(assignments, key=lambda x: (x['course_id'], x['assignment_id']))
         return ret_dic
-    
+
     def grant_extension_to_student(self, assignment_id, student_id, minutes, hours, days, weeks):
         """Grants extension for a particular assignment and student.
 
