@@ -3,6 +3,7 @@ import os
 
 from tornado import web
 
+from ...server_extensions.helpers.deadline import DeadlineManager
 from .base import BaseApiHandler, check_xsrf, check_notebook_dir
 from ...api import MissingEntry
 
@@ -143,6 +144,8 @@ class AssignmentHandler(BaseApiHandler):
         assignment = {"duedate": duedate}
         assignment_id = assignment_id.strip()
         self.gradebook.update_or_create_assignment(assignment_id, **assignment)
+        DeadlineManager(self.api.exchange_root, self.coursedir, self.log) \
+            .update_or_add_deadline(assignment_id, duedate)
         sourcedir = os.path.abspath(self.coursedir.format_path(self.coursedir.source_directory, '.', assignment_id))
         if not os.path.isdir(sourcedir):
             os.makedirs(sourcedir)
@@ -279,6 +282,22 @@ class AutogradeHandler(BaseApiHandler):
         self.write(json.dumps(self.api.autograde(assignment_id, student_id)))
 
 
+class ExtensionHandler(BaseApiHandler):
+    @web.authenticated
+    @check_xsrf
+    @check_notebook_dir
+    def post(self, assignment_id, student_id):
+        data = self.get_json_body()
+        try:
+            minutes = int(data.get('minutes', 0))
+            hours = int(data.get('hours', 0))
+            days = int(data.get('days', 0))
+            weeks = int(data.get('weeks', 0))
+        except ValueError:
+            raise web.HTTPError(400, "Invalid extension time")
+        self.write(json.dumps(self.api.grant_extension_to_student(assignment_id, student_id, minutes, hours, days, weeks)))
+
+
 class GenerateAllFeedbackHandler(BaseApiHandler):
     @web.authenticated
     @check_xsrf
@@ -330,6 +349,7 @@ default_handlers = [
     (r"/formgrader/api/submissions/([^/]+)", SubmissionCollectionHandler),
     (r"/formgrader/api/submission/([^/]+)/([^/]+)", SubmissionHandler),
     (r"/formgrader/api/submission/([^/]+)/([^/]+)/autograde", AutogradeHandler),
+    (r"/formgrader/api/submission/extension/([^/]+)/([^/]+)", ExtensionHandler),
 
     (r"/formgrader/api/submitted_notebooks/([^/]+)/([^/]+)", SubmittedNotebookCollectionHandler),
     (r"/formgrader/api/submitted_notebook/([^/]+)/flag", FlagSubmissionHandler),
