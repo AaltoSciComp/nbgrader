@@ -4,7 +4,7 @@ A summary of changes to nbgrader.
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
-## 0.8.4.dev502
+## 0.8.4.dev503
 
 ## 0.8.4
 
