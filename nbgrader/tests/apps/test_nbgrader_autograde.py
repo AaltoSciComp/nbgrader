@@ -174,6 +174,35 @@ class TestNbGraderAutograde(BaseTestApp):
             with pytest.raises(MissingEntry):
                 notebook = gb.find_submission_notebook("p1", "ps1", "baz")
 
+    def test_multiple_student_ids(self, db, course_dir):
+        """Does --CourseDirectory.student_id_exclude=X exclude students?"""
+        run_nbgrader(["db", "assignment", "add", "ps1", "--db", db, "--duedate",
+                      "2015-02-02 14:58:23.948203 America/Los_Angeles"])
+        run_nbgrader(["db", "student", "add", "foo", "--db", db])
+        run_nbgrader(["db", "student", "add", "bar", "--db", db])
+        run_nbgrader(["db", "student", "add", "baz", "--db", db])
+
+        self._copy_file(join("files", "submitted-unchanged.ipynb"), join(course_dir, "source", "ps1", "p1.ipynb"))
+        run_nbgrader(["generate_assignment", "ps1", "--db", db])
+
+        self._copy_file(join("files", "submitted-unchanged.ipynb"), join(course_dir, "submitted", "foo", "ps1", "p1.ipynb"))
+        self._copy_file(join("files", "submitted-unchanged.ipynb"), join(course_dir, "submitted", "bar", "ps1", "p1.ipynb"))
+        self._copy_file(join("files", "submitted-unchanged.ipynb"), join(course_dir, "submitted", "baz", "ps1", "p1.ipynb"))
+        run_nbgrader(["autograde", "ps1", "--db", db, '--students=foo,bar'])
+
+        assert os.path.isfile(join(course_dir, "autograded", "foo", "ps1", "p1.ipynb"))
+        assert os.path.isfile(join(course_dir, "autograded", "bar", "ps1", "p1.ipynb"))
+        assert not os.path.isfile(join(course_dir, "autograded", "baz", "ps1", "p1.ipynb"))
+
+        with Gradebook(db) as gb:
+            notebook = gb.find_submission_notebook("p1", "ps1", "foo")
+            assert notebook.score == 1
+            notebook = gb.find_submission_notebook("p1", "ps1", "bar")
+            assert notebook.score == 1
+
+            with pytest.raises(MissingEntry):
+                notebook = gb.find_submission_notebook("p1", "ps1", "baz")
+
     def test_grade_timestamp(self, db: str, course_dir: str) -> None:
         """Is a timestamp correctly read in?"""
         run_nbgrader(["db", "assignment", "add", "ps1", "--db", db, "--duedate",

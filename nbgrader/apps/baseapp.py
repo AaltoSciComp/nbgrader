@@ -32,6 +32,7 @@ from typing import Any
 nbgrader_aliases = {
     'log-level' : 'Application.log_level',
     'student': 'CourseDirectory.student_id',
+    'students': 'CourseDirectory.student_ids',
     'assignment': 'CourseDirectory.assignment_id',
     'notebook': 'CourseDirectory.notebook_id',
     'db': 'CourseDirectory.db_url',

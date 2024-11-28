@@ -35,11 +35,12 @@ class CourseDirectory(LoggingConfigurable):
         "*",
         help=dedent(
             """
-            File glob to match student IDs. This can be changed to filter by
-            student. Note: this is always changed to '.' when running `nbgrader
-            assign`, as the assign step doesn't have any student ID associated
-            with it. With `nbgrader submit`, this instead forces the use of
-            an alternative student ID for the submission. See `nbgrader submit --help`.
+            File glob to match student IDs. Mutually exclusive with
+            `student_ids`. This can be changed to filter by student. Note: this
+            is always changed to '.' when running `nbgrader assign`, as the
+            assign step doesn't have any student ID associated with it. With
+            `nbgrader submit`, this instead forces the use of an alternative
+            student ID for the submission. See `nbgrader submit --help`.
 
             If the ID is purely numeric and you are passing it as a flag on the
             command line, you will need to escape the quotes in order to have
@@ -54,9 +55,33 @@ class CourseDirectory(LoggingConfigurable):
 
     @validate('student_id')
     def _validate_student_id(self, proposal: Bunch) -> str:
+        if proposal.value and self.student_ids:
+            raise ValueError(f"Both `student_id` ({proposal.value}) and `student_ids` ({self.student_ids}) cannot be set at the same time.")
         if proposal['value'].strip() != proposal['value']:
             self.log.warning("student_id '%s' has trailing whitespace, stripping it away", proposal['value'])
         return proposal['value'].strip()
+
+    student_ids = List(
+        [],
+        help=dedent(
+            """
+            A list of student IDs, either as a comma-separated string or
+            multiple parameters. Mutually exclusive with `student_id`.
+            """
+        )
+    ).tag(config=True)
+
+    @validate('student_ids')
+    def _validate_student_ids(self, proposal: Bunch) -> str:
+        if self.student_id and self.student_id != "*":
+            raise ValueError(f"Both `student_id` ({self.student_id}) and `student_ids` ({proposal.value}) cannot be set at the same time.")
+
+        self.student_id = ""
+
+        if isinstance(proposal.value, list) and len(proposal.value) == 1:
+            return proposal.value[0].split(",")
+
+        return proposal.value
 
     student_id_exclude = Unicode(
         "",

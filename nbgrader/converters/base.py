@@ -161,8 +161,14 @@ class BaseConverter(LoggingConfigurable):
     def init_notebooks(self) -> None:
         self.assignments = {}
         self.notebooks = []
-        assignment_glob = self._format_source(self.coursedir.assignment_id, self.coursedir.student_id)
-        for assignment in glob.glob(assignment_glob):
+        student_ids = self.coursedir.student_ids or [self.coursedir.student_id]
+
+        assignments = []
+        for student_id in student_ids:
+            assignment_glob = self._format_source(self.coursedir.assignment_id, student_id)
+            assignments.extend(glob.glob(assignment_glob))
+
+        for assignment in assignments:
             notebook_glob = os.path.join(assignment, self.coursedir.notebook_id + ".ipynb")
             found = glob.glob(notebook_glob)
             if len(found) == 0:
