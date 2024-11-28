@@ -166,10 +166,6 @@ regex = '''
 message_template = "Bump to {new_version}"
 tag_template = "v{new_version}"
 
-[[tool.tbump.before_commit]]
-name = "check changelog"
-cmd = "grep -q {new_version} CHANGELOG.md"
-
 [[tool.tbump.file]]
 src = "nbgrader/_version.py"
 version_template = '({major}, {minor}, {patch}, "{channel}", "{release}")'
