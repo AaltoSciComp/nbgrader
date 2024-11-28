@@ -89,6 +89,16 @@ class NbGrader(JupyterApp):
         )
     ).tag(config=True)
 
+    force_output_color = Bool(
+        False,
+        help=dedent(
+            """
+            If set to true, output will include color even when not outputting
+            to stdout.
+            """
+        )
+    )
+
     def init_logging(self,
                      handler_class: type,
                      handler_args: TypingList[StringIO],
@@ -98,7 +108,7 @@ class NbGrader(JupyterApp):
 
         # Since traitlets >= 5.2 the log_level is not set for a new handler, and is set to '0'
         handler.setLevel(self.log_level)
-
+        color = color or self.force_output_color
         if color:
             log_format = self.log_format
         else:
