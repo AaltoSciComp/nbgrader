@@ -97,7 +97,7 @@ class NbGrader(JupyterApp):
             to stdout.
             """
         )
-    )
+    ).tag(config=True)
 
     def init_logging(self,
                      handler_class: type,
