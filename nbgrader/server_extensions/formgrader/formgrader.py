@@ -65,7 +65,7 @@ class FormgradeExtension(NbGrader):
                 "The course directory root is not a subdirectory of the notebook "
                 "server root. This means that nbgrader will not work correctly. "
                 "If you want to use nbgrader, please ensure the course directory "
-                "root is in a subdirectory of the notebook root: %s", self.root_dir)
+                "root (%s) is in a subdirectory of the notebook root: %s", self.coursedir.root, self.root_dir)
         else:
             nbgrader_bad_setup = False
 
