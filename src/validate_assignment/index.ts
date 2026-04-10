@@ -134,6 +134,7 @@ class ValidateButton extends ToolbarButton {
       requestAPI<any>(
           'nbgrader_version',
           undefined,
+          // TODO: should this be encoded?
           new Map([['version', nbgrader_version]])
       ).then(
           this.versionCheckCallback

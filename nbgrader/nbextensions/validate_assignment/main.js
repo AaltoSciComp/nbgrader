@@ -19,6 +19,7 @@ define([
             type : "GET",
             dataType : "json",
             data : {
+                // TODO: should this be encoded?
                 version: nbgrader_version
             },
             success : function (response) {
