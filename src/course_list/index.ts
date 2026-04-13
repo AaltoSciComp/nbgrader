@@ -80,7 +80,7 @@ class CourseListWidget extends Widget {
     }
 
     checkNbGraderVersion() {
-        let nbgrader_version = '0.8.4+aalto6';
+        let nbgrader_version = '0.8.4+aalto7';
         requestAPI<any>('nbgrader_version?version='+encodeURIComponent(nbgrader_version))
             .then(response => {
                 if (!response['success']) {
